@@ -1,13 +1,14 @@
 from flask import Flask, request, Response
 import logging
 import json
-import os
+from read_config import load_config
 from utils import *
+from dotenv import load_dotenv
 
-with open('config.json', 'r', encoding="utf-8") as config_file:
-    CONFIG = json.loads('\n'.join(config_file.readlines()))
+load_dotenv()
+CONFIG = load_config()
 app = Flask(__name__)
-logging.basicConfig(filename="alice.log", level=logging.INFO)
+logging.basicConfig(filename="alice.log", filemode=os.getenv("LOG_MODE"), level=logging.INFO)
 
 
 @app.route('/', methods=['POST'])
@@ -31,6 +32,8 @@ def handle_dialog(req, res):
     set_text(res, 'hi')
     if req['session']['new']:  # is sessions new?
         set_text(res, CONFIG['greeting'].format(CONFIG["name"]))
+    else:
+        exec_command(res, req['request']['command'])
 
 
 if __name__ == '__main__':
