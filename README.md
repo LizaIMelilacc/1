@@ -2,5 +2,5 @@
 ## Запуск для тестирования:
 1. `python app.py`
 2. `ngrok http 5000`
-3. Вставте ссылку ![alt text](img/paste.png)
+3. Вставте ссылку <img src="img/paste.png" width="512"/>
 4. Перейдите во вкладку "Тестрование"
