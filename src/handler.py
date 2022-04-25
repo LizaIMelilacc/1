@@ -1,5 +1,6 @@
 import json
 from utils import get_answer
+from flask import session
 
 
 with open("..\\config.json", 'r', encoding="utf-8") as config_file:
@@ -13,6 +14,5 @@ def handle_dialog(request):
 
     command = request["request"]["command"]
     message_id = request["session"]["message_id"]
-    if message_id == 1:
-        pass
-    return command[::-1]
+
+    return 'hi'
