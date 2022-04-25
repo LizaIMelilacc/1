@@ -1,5 +1,6 @@
 from flask import Flask, request
 import logging
+from utils import get_answer
 
 from handler import handle_dialog
 
@@ -8,15 +9,21 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-@app.route('/', methods=["POST", "GET"])
+@app.route('/', methods=["POST"])
 def main():
     req = request.json
+
+    try:
+        answer = handle_dialog(req)
+    except Exception as error:
+        logging.error(f'ERR:  {error!r}')
+        answer = get_answer("error")
     response = {
         "version": req["version"],
         "session": req["session"],
         "response": {
             "end_session": False,
-            "text": handle_dialog(req)
+            "text": answer
         }
     }
 
