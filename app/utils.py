@@ -1,7 +1,6 @@
-from api import *
 from pymorphy2 import MorphAnalyzer
 
-from read_config import load_config
+from app.read_config import load_config
 
 config = load_config()
 analyzer = MorphAnalyzer()
