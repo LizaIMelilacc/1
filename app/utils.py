@@ -1,4 +1,5 @@
 from pymorphy2 import MorphAnalyzer
+from random import choice
 
 from app.read_config import load_config
 
@@ -32,3 +33,11 @@ def exec_command(response, cmd):
     """
     command = [to_normal_form(word) for word in cmd.lower().split()]
     # Здесь ожидается сравнение полученных слов со словами-ключами
+
+
+def get_answer_option(field):
+    """
+    :param field: field in config with many options (greetings, for example)
+    :return: random option of given field
+    """
+    return choice(config[field])
