@@ -1,3 +1,4 @@
+import json
 import os
 import requests
 from dotenv import load_dotenv
@@ -5,6 +6,21 @@ from dotenv import load_dotenv
 load_dotenv()
 API_ADDRESS = os.getenv("API_ADDRESS")
 SITE = os.getenv("SITE")
+SEP = os.getenv("SEP")
+
+
+def get_ingredients(ing_set):
+    """
+    :param ing_set: IngSet field from json-response
+    :return: text for output
+    """
+    answer = []
+    counts = json.loads(ing_set["Counts"])
+    max_length = 0
+    for (title), (count) in zip(ing_set["Ingredients"], json.loads(ing_set["Counts"])):
+        answer.append((title['Title'], counts[count], len(title["Title"])))
+        max_length = max(max_length, len(title["Title"]))
+    return '\n'.join([i[0] + SEP * (max_length - i[2]) + SEP * 5 + i[1] for i in answer])
 
 
 def pretty_recipe(recipe_json):
@@ -14,12 +30,27 @@ def pretty_recipe(recipe_json):
     """
     new_line = '\n'
     # TODO: not finished
+    for_say = recipe_json['Steps'].replace(';', new_line * 2)
     return \
         f"""
         {recipe_json['Title']}
         {recipe_json['Description']}
-        {recipe_json['Steps'].replace(';', new_line * 2)}
-        """
+        Ингредиенты
+        {get_ingredients(recipe_json['IngSet'])}
+        {new_line.join(
+            [f'{b}: {a}' for a, b in zip(
+                recipe_json['Energy'].split(";"), 
+                ['калорийность', 'белки', 'жиры', 'углеводы']
+            )]
+        )}
+        """[:1024], [  # 1024 - ограничение от Алисы
+            {
+                "title": "Подробнее",
+                "payload": {},
+                "url": f"https://{SITE}{recipe_json['Link']}",
+                "hide": True
+            }
+        ]
 
 
 def get_by_ingredients(good=[], bad=[]):

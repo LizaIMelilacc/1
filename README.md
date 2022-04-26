@@ -7,7 +7,9 @@
 ```shell
 API_ADDRESS=http://localhost:8080
 LOG_FILE=alice.log
+LOG_MODE=w
 PORT=5000
+SITE=eda.ru
 ```
 
 ## Запуск для тестирования:

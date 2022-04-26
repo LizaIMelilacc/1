@@ -29,7 +29,6 @@ def main():
 
 
 def handle_dialog(req, res):
-    set_text(res, 'hi')
     if req['session']['new']:  # is sessions new?
         set_text(res, CONFIG['greeting'].format(CONFIG["name"]))
     else:
@@ -37,4 +36,3 @@ def handle_dialog(req, res):
 
 
 port = int(os.environ.get('PORT', 5000))
-app.run(host='0.0.0.0', port=port)
