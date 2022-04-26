@@ -31,26 +31,27 @@ def pretty_recipe(recipe_json):
     new_line = '\n'
     # TODO: not finished
     for_say = recipe_json['Steps'].replace(';', new_line * 2)
-    return \
-        f"""
-        {recipe_json['Title']}
-        {recipe_json['Description']}
-        Ингредиенты
-        {get_ingredients(recipe_json['IngSet'])}
-        {new_line.join(
-            [f'{b}: {a}' for a, b in zip(
-                recipe_json['Energy'].split(";"), 
-                ['калорийность', 'белки', 'жиры', 'углеводы']
-            )]
-        )}
-        """[:1024], [  # 1024 - ограничение от Алисы
-            {
-                "title": "Подробнее",
-                "payload": {},
-                "url": f"https://{SITE}{recipe_json['Link']}",
-                "hide": True
-            }
-        ]
+    text = f"""
+     {recipe_json['Title']}
+     {recipe_json['Description']}
+     Ингредиенты
+     {get_ingredients(recipe_json['IngSet'])}
+     {new_line.join(
+        [f'{b}: {a}' for a, b in zip(
+            recipe_json['Energy'].split(";"),
+            ['калорийность', 'белки', 'жиры', 'углеводы']
+        )]
+    )}
+     """
+    if len(text) >= 1024:
+        text = text[:1020] + "\n..."
+    return text, [{
+        "title": "Подробнее",
+        "payload": {},
+        "url": f"https://{SITE}{recipe_json['Link']}",
+        "hide": True
+    }
+    ]
 
 
 def get_by_ingredients(good=[], bad=[]):
