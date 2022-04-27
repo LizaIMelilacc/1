@@ -63,7 +63,7 @@ def exec_command(response, cmd):
             set_text(response, "Не поняла вас. Напишите, пожалуйста, как вы хотите искать рецепт: по названию блюда или ингредиентам?")
     elif previous_answer == AnswerTypes.SET_TITLE:
         title = "Шарлотка" # Тут получим title, обработав command. TODO
-        recipe = get_by_title(title, bad_list)
+        recipe = get_by_title(title, bad_list) # Нужно получить id рецепта для дальнейшего его сохранения в бд
         set_text(response, recipe)
     elif previous_answer == AnswerTypes.SET_INGREDIENTS:
         ingredients = ["яблоко"] # Тут получим ingredients, обработав command. TODO
