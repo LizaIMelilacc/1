@@ -34,7 +34,8 @@ def exec_command(response, cmd):
     :return: None. change values in response
     """
     command = set([to_normal_form(word) for word in cmd.lower().split()])
-    previous_command = '' # Тут нужно подгрузить прошлую команду юзера
+    previous_answer = Answers.SET_INGREDIENTS
+    # ↑ Тут нужно подгрузить прошлый ответ юзера в формате Answers
 
     repeat_words = {"сначала", "заново", "перезапустить", "помощь"}
     refusal_words = {"нет"}
@@ -43,6 +44,11 @@ def exec_command(response, cmd):
 
     if command in repeat_words:
         set_text(response, get_answer_option("help"))
+        save_answer(Answers.HELP)
+        return
+    if previous_answer == Answers.SET_BAD_LIST:
+        bad_list = [] # Тут обработаем bad-list из command
+        save_bad_list(bad_list)
 
 
 def get_answer_option(field):
@@ -51,3 +57,26 @@ def get_answer_option(field):
     :return: random option of given field
     """
     return choice(config[field])
+
+def save_answer(answer):
+    """
+    :param answer: answer to user
+    :return: None. Saving the answer to database for next operations
+    """
+    # TODO
+    pass
+
+def save_bad_list(bad_list):
+    """
+    :param bad_list: Bad list which need to save
+    :return:
+    """
+    # TODO
+    pass
+
+def load_bad_list():
+    """
+    :return: Saved bad list of ingredients
+    """
+    # TODO
+    return ["рис"]
