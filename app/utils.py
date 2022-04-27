@@ -1,5 +1,7 @@
 from pymorphy2 import MorphAnalyzer
 from random import choice
+from app.Answers import Answers
+
 
 from app.read_config import load_config
 
@@ -31,8 +33,16 @@ def exec_command(response, cmd):
     :param cmd: command
     :return: None. change values in response
     """
-    command = [to_normal_form(word) for word in cmd.lower().split()]
-    # Здесь ожидается сравнение полученных слов со словами-ключами
+    command = set([to_normal_form(word) for word in cmd.lower().split()])
+    previous_command = '' # Тут нужно подгрузить прошлую команду юзера
+
+    repeat_words = {"сначала", "заново", "перезапустить", "помощь"}
+    refusal_words = {"нет"}
+    agreement_words = {"да", "согласный", "хотеть"}
+    continuation_words = {"следующий", "шаг", "продолжить"}
+
+    if command in repeat_words:
+        set_text(response, get_answer_option("help"))
 
 
 def get_answer_option(field):
