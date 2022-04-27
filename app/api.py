@@ -1,7 +1,8 @@
 import json
-import os
+from app.read_config import config
 import requests
 from dotenv import load_dotenv
+from app.store import *
 
 load_dotenv()
 API_ADDRESS = os.getenv("API_ADDRESS")
@@ -71,14 +72,27 @@ def get_by_ingredients(good=[], bad=[]):
     return pretty_recipe(response.json()['response'])
 
 
-def get_by_title(title):
+def get_by_title(title, bad=[]):
     """
     :param title:
     :return:
     """
-    # TODO
-    pass
+    response = requests.get(API_ADDRESS + "/title", json={
+        "title": title,
+        "bad": bad
+    })
+    if response.status_code != 200:
+        if response.text == "not found":
+            return "Ничего не нашлось"
+        return None
+    return pretty_recipe(response.json()['response'])
 
 
 if __name__ == "__main__":
+    set_user_bad('foo', ['1', '4'])
+    print(get_user_bad('foo'))
+    print(store.ttl('foo'))
+    time.sleep(10)
+    print(get_user_bad('foo'))
+
     print(get_by_ingredients(["молоко", "яйца"], ["рис"]))

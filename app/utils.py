@@ -1,8 +1,7 @@
 from pymorphy2 import MorphAnalyzer
 import app.api as api
-from app.read_config import load_config
+from app.read_config import config
 
-config = load_config()
 analyzer = MorphAnalyzer()
 
 
@@ -39,9 +38,12 @@ def exec_command(response, cmd):
     :param cmd: command
     :return: None. change values in response
     """
-    command = [to_normal_form(word) for word in cmd.lower().split()]
-    text, buttons = api.get_by_ingredients(["молоко", "яйцо"], ["сливки"])
+    command = [to_normal_form(word) for word in cmd.split()]
+    command_set = set(command)
+    if set(['название', 'имя']).intersection(command_set) != 0:  # Если поиск по названию
+        text, buttons = api.get_by_title(cmd.split()[-1], [])
+    else:
+        text, buttons = api.get_by_ingredients(["молоко", "яйцо"], ["сливки"])
     set_text(response, text)
     set_buttons(response, buttons)
-    print(response)
     # Здесь ожидается сравнение полученных слов со словами-ключами
