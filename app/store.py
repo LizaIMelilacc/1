@@ -25,13 +25,22 @@ def save_answer(user_id: str, answer: AnswerTypes):
     """
     :param user_id: user id
     :param answer: answer to user
-    :return: None. Saving the answer to database for next operations
+    :return: None. Saving an answer to database for next operations
     """
-    pass # TODO
+    str_answer = str(answer)
+    # TODO
 
 
-def load_answer(user_id):
-    pass # TODO
+def load_answer(user_id: str) -> str:
+    pass  # TODO
+
+
+def save_recipe(user_id: str, recipe_id: str):
+    pass  # TODO
+
+
+def load_recipe(user_id: str) -> str:
+    pass  # TODO
 
 
 if __name__ == "__main__":

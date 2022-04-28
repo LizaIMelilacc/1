@@ -69,7 +69,7 @@ def get_by_ingredients(good=[], bad=[]):
     if response.status_code != 200:
         return None
 
-    return pretty_recipe(response.json()['response'])
+    return response.json()['response']
 
 
 def get_by_title(title, bad=[]):
@@ -85,11 +85,11 @@ def get_by_title(title, bad=[]):
         if response.text == "not found":
             return "Ничего не нашлось"
         return None
-    return pretty_recipe(response.json()['response'])
+    return response.json()['response']
 
 
 def send_rate(rate):
-    pass # TODO
+    pass  # TODO
 
 
 if __name__ == "__main__":
