@@ -1,4 +1,5 @@
 from pymorphy2 import MorphAnalyzer
+from re import split as re_split
 from random import choice
 
 from app.AnswerTypes import AnswerTypes
@@ -25,18 +26,9 @@ def set_text(response, text):
     response['response']['text'] = text
 
 
-def get_bad_list(cmd: str) -> list:
-    """
-    Getting bad-list from command
-    :param cmd: user command
-    :return: list of bad ingredients
-    """
-    pass  # TODO
-
-
 def get_title(cmd: str) -> str:
     """
-    Getting title from command.
+    Getting title from command
     :param cmd: user command
     :return: title of recipe
     """
@@ -45,17 +37,22 @@ def get_title(cmd: str) -> str:
 
 def get_ingredients(cmd: str) -> list:
     """
-    Getting ingredients from command.
+    Getting ingredients from command
     :param cmd: user command
     :return: list of ingredients
     """
-    pass  # TODO
+    return re_split(', | и | а также ', cmd)
 
 
-def get_answer_option(field: str):
+def get_answer_option(field: str) -> str:
     """
-    Choice random field option in config.
+    Choice random field option in config
     :param field: field in config with many options (greetings, for example)
     :return: random option of given field
     """
     return choice(config[field])
+
+
+def go_to_start(response, user_id):
+    set_text(response, get_answer_option("greetings"))
+    save_answer(user_id, AnswerTypes.START)

@@ -4,4 +4,4 @@ __pycache__/
 .env
 alice.log
 
--$usecase.xlsx
+/~$usecase.xlsx

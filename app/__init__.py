@@ -32,7 +32,7 @@ def main():
 def handle_dialog(req, res):
     set_text(res, 'hi')
     if req['session']['new']:  # is sessions new?
-        set_text(res, get_answer_option("greetings"))
+        go_to_start(res, req['session']['user']['user_id'])
     else:
         exec_command(res, req['request']['command'])
 

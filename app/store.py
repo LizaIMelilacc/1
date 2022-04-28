@@ -35,11 +35,11 @@ def load_answer(user_id: str) -> str:
     pass  # TODO
 
 
-def save_recipe(user_id: str, recipe_id: str):
+def save_recipe(user_id: str, recipe):
     pass  # TODO
 
 
-def load_recipe(user_id: str) -> str:
+def load_recipe(user_id: str) -> dict:
     pass  # TODO
 
 

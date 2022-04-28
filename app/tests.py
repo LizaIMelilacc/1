@@ -1,6 +1,7 @@
-a = {1, 2, 3}
-b = {3, 4, 5}
-print(bool(a & b))
+from AnswerTypes import AnswerTypes
+
+
+print(AnswerTypes.SET_TYPE_OF_SEARCHING)
 
 
 
