@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-CONFIG = load_config()
+CONFIG = config
 app = Flask(__name__)
 logging.basicConfig(filename="app/logs/alice.log", filemode='w', level=logging.INFO)
 

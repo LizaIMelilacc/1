@@ -1,7 +1,7 @@
 import os
 import time
 from app.read_config import config  # Нужен для чтения .env
-
+from app.AnswerTypes import AnswerTypes
 import redis
 
 ex = int(os.getenv("EX"))
@@ -19,6 +19,19 @@ def get_user_bad(user_id: str) -> list:
 
 def set_user_bad(user_id: str, bad: list):
     store.set(user_id, ';'.join(bad), ex=ex)
+
+
+def save_answer(user_id: str, answer: AnswerTypes):
+    """
+    :param user_id: user id
+    :param answer: answer to user
+    :return: None. Saving the answer to database for next operations
+    """
+    pass # TODO
+
+
+def load_answer(user_id):
+    pass # TODO
 
 
 if __name__ == "__main__":

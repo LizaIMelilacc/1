@@ -89,8 +89,7 @@ def get_by_title(title, bad=[]):
 
 
 def send_rate(rate):
-    # TODO
-    pass
+    pass # TODO
 
 
 if __name__ == "__main__":

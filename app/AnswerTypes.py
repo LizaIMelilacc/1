@@ -19,10 +19,14 @@ class AnswerTypes(Enum):
             return AnswerTypes.HELP
         if string == "SET_BAD_LIST":
             return AnswerTypes.SET_BAD_LIST
+        if string == "SET_TYPE_OF_SEARCHING":
+            return AnswerTypes.SET_TYPE_OF_SEARCHING
         if string == "SET_INGREDIENTS":
             return AnswerTypes.SET_INGREDIENTS
         if string == "SET_TITLE":
             return AnswerTypes.SET_TITLE
+        if string == "RECIPE":
+            return AnswerTypes.RECIPE
         if string == "SET_RATE":
             return AnswerTypes.SET_RATE
         return None
