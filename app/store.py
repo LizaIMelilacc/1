@@ -1,8 +1,9 @@
 import os
 import time
-from app.read_config import config  # Нужен для чтения .env
-from app.AnswerTypes import AnswerTypes
+
 import redis
+
+from app.AnswerTypes import AnswerTypes
 
 ex = int(os.getenv("EX"))
 port = int(os.getenv("REDIS_PORT"))
@@ -23,6 +24,7 @@ def set_user_bad(user_id: str, bad: list):
 
 def save_answer(user_id: str, answer: AnswerTypes):
     """
+    Saving answer to redis
     :param user_id: user id
     :param answer: answer to user
     :return: None. Saving an answer to database for next operations
@@ -32,14 +34,30 @@ def save_answer(user_id: str, answer: AnswerTypes):
 
 
 def load_answer(user_id: str) -> str:
+    """
+    Loading answer from redis
+    :param user_id: user id
+    :return: previous answer to user
+    """
     pass  # TODO
 
 
 def save_recipe(user_id: str, recipe):
+    """
+    Saving recipe to redis
+    :param user_id: user id
+    :param recipe: recipe-json
+    :return:
+    """
     pass  # TODO
 
 
 def load_recipe(user_id: str) -> dict:
+    """
+    Loading recipe from redis
+    :param user_id: user id
+    :return: recipe-json
+    """
     pass  # TODO
 
 

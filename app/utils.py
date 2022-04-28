@@ -1,10 +1,10 @@
-from pymorphy2 import MorphAnalyzer
-from re import split as re_split
 from random import choice
+from re import split as re_split
 
-from app.AnswerTypes import AnswerTypes
+from pymorphy2 import MorphAnalyzer
+
+from app.read_config import config
 from app.store import *
-from app.api import get_by_title, get_by_ingredients, send_rate, pretty_recipe
 
 analyzer = MorphAnalyzer()
 
@@ -32,7 +32,7 @@ def get_title(cmd: str) -> str:
     :param cmd: user command
     :return: title of recipe
     """
-    pass  # TODO
+    return cmd # Примитивное получение названия блюда.
 
 
 def get_ingredients(cmd: str) -> list:
