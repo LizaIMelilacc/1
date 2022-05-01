@@ -3,11 +3,12 @@ from app.read_config import config
 import requests
 from dotenv import load_dotenv
 from app.store import *
+from app.Env import Env
 
 load_dotenv()
-API_ADDRESS = os.getenv("API_ADDRESS")
-SITE = os.getenv("SITE")
-SEP = os.getenv("SEP")
+API_ADDRESS = Env.API_ADDRESS
+SITE = Env.SITE
+SEP = Env.SEP
 
 
 def get_ingredients(ing_set):

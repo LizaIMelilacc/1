@@ -1,4 +1,5 @@
-from utils import *
+from app.api import get_by_title, pretty_recipe, send_rate, get_by_ingredients
+from app.utils import *
 
 
 def exec_command(response, cmd):
@@ -18,7 +19,7 @@ def exec_command(response, cmd):
 
     user_id = response["session"]['user']["user_id"]
     previous_answer = AnswerTypes.from_string(load_answer(user_id))
-    bad_list = get_user_bad(user_id)
+    bad_list = get_user_data(user_id)
     if cmd == "помощь":
         set_text(response, get_answer_option("help"))
     elif command <= restart_words:
@@ -31,7 +32,7 @@ def exec_command(response, cmd):
             bad_list = []
         else:
             bad_list = get_ingredients(cmd)  # Тут получим bad-list, обработав command.
-        set_user_bad(user_id, bad_list)
+        set_user_data(user_id, bad_list)
         set_text(response, get_answer_option("type_of_searching"))
         save_answer(user_id, AnswerTypes.SET_TYPE_OF_SEARCHING)
     elif previous_answer == AnswerTypes.SET_TYPE_OF_SEARCHING:

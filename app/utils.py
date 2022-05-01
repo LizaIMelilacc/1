@@ -1,8 +1,6 @@
 from random import choice
 from re import split as re_split
-
 from pymorphy2 import MorphAnalyzer
-
 from app.read_config import config
 from app.store import *
 
@@ -32,7 +30,7 @@ def get_title(cmd: str) -> str:
     :param cmd: user command
     :return: title of recipe
     """
-    return cmd # Примитивное получение названия блюда.
+    return cmd  # Примитивное получение названия блюда.
 
 
 def get_ingredients(cmd: str) -> list:
