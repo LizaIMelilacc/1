@@ -2,7 +2,8 @@ from random import choice
 from re import split as re_split
 from pymorphy2 import MorphAnalyzer
 from app.read_config import config
-from app.store import *
+from app import store
+from app.AnswerTypes import AnswerTypes
 
 analyzer = MorphAnalyzer()
 
@@ -53,4 +54,4 @@ def get_answer_option(field: str) -> str:
 
 def go_to_start(response, user_id):
     set_text(response, get_answer_option("greetings"))
-    save_answer(user_id, AnswerTypes.START)
+    store.save_answer(user_id, AnswerTypes.START)
