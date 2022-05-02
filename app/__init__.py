@@ -22,18 +22,18 @@ def main():
         }
     }
     handle_dialog(request.json, response)
-    try:
-        handle_dialog(request.json, response)
+    handle_dialog(request.json, response)
+    '''
     except Exception as error:
         logging.error(f'ERR:  {error!r}')
         response['response']['text'] = CONFIG['error']
-    print(f"{response=}")
+    '''
     return Response(json.dumps(response), mimetype='application/json')
 
 
 def handle_dialog(req, res):
     if req['session']['new']:  # is sessions new?
-        go_to_start(res, req['session']['user']['user_id'])
+        set_text(res, get_answer_option('greetings'))
     else:
         exec_command(res, req['request']['command'])
 

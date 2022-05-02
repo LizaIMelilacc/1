@@ -50,8 +50,3 @@ def get_answer_option(field: str) -> str:
     :return: random option of given field
     """
     return choice(config[field])
-
-
-def go_to_start(response, user_id):
-    set_text(response, get_answer_option("greetings"))
-    store.save_answer(user_id, AnswerTypes.START)

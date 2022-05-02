@@ -1,6 +1,11 @@
-from app.api import get_by_title, pretty_recipe, send_rate, get_by_ingredients
+import app.api as api
 from app.utils import *
 from app.AnswerTypes import *
+from app.kewords import Keywords
+
+
+def contain(phrase: set, phrase_type: set) -> bool:
+    return len(phrase.intersection(phrase_type)) != 0
 
 
 def exec_command(response, cmd):
@@ -10,77 +15,57 @@ def exec_command(response, cmd):
     :param cmd: command
     :return: None. change values in response
     """
-    command = set([to_normal_form(word) for word in cmd.lower().split()])
+    command = [to_normal_form(word) for word in cmd.lower().split()]
+    command_set = set(command)
 
-    restart_words = {"сначала", "заново", "перезапустить", "в"}
-    repeat_words = {"повторить", "еще"}
-    refusal_words = {"нет", "отутствовать", "отказать"}
-    agreement_words = {"да", "согласный", "начать"}
     # continuation_words = {"следующий", "шаг", "продолжить"}
 
     user_id = response["session"]['user']["user_id"]
-    previous_answer = AnswerTypes.from_string(store.load_answer(user_id))
-    bad_list = store.get_user_data(user_id)[store.BAD_LIST_ID]
-    if cmd == "помощь":
+    user_data = store.UserData(user_id)
+    if cmd in Keywords.HELP:
         set_text(response, get_answer_option("help"))
-    elif command <= restart_words:
-        go_to_start(response, user_id)
-    elif previous_answer == AnswerTypes.START:
-        set_text(response, get_answer_option("bad_ingredients"))
-        store.save_answer(user_id, AnswerTypes.SET_BAD_LIST)
-    elif previous_answer == AnswerTypes.SET_BAD_LIST:
-        if command & refusal_words:
-            bad_list = []
-        else:
-            bad_list = get_ingredients(cmd)  # Тут получим bad-list, обработав command.
-        store.set_user_bad(user_id, bad_list)
+        return
+    if contain(command_set, Keywords.WELCOME) and len(command_set) == 1:
+        user_data.bad = []  # При перезапуске отменяем стоп-лист
         set_text(response, get_answer_option("type_of_searching"))
-        store.save_answer(user_id, AnswerTypes.SET_TYPE_OF_SEARCHING)
-    elif previous_answer == AnswerTypes.SET_TYPE_OF_SEARCHING:
-        if {"ингредиент", "ингредиенты"} & command:
-            set_text(response, get_answer_option("ingredients"))
-            store.save_answer(user_id, AnswerTypes.SET_INGREDIENTS)
-        elif {'название'} & command:
-            set_text(response, get_answer_option("title"))
-            store.save_answer(user_id, AnswerTypes.SET_TITLE)
+        user_data.dialog_point = AnswerTypes.START
+        user_data.commit()  # Сохраняем все изменения
+        return
+    if user_data.dialog_point == AnswerTypes.START:
+        if contain(command_set, Keywords.TITLE_SEARCH):
+            user_data.dialog_point = AnswerTypes.FIND_NAME
+            set_text(response, get_answer_option('title'))
+        elif contain(command_set, Keywords.LIST_SEARCH):
+            user_data.dialog_point = AnswerTypes.FIND_LIST
+            set_text(response, get_answer_option('ingredients'))
         else:
-            set_text(response,
-                     get_answer_option("not_understand") + ' ' + get_answer_option("type_of_searching"))
-    elif previous_answer == AnswerTypes.SET_TITLE:
-        title = get_title(cmd)  # Тут получим title, обработав command.
-        recipe = get_by_title(title, bad_list)  # Нужно получить id рецепта для дальнейшего его сохранения в бд.
-        set_text(response, pretty_recipe(recipe))
-        store.save_recipe(user_id, recipe)
-        store.save_answer(user_id, AnswerTypes.RECIPE)
-    elif previous_answer == AnswerTypes.SET_INGREDIENTS:
-        ingredients = get_ingredients(cmd)  # Тут получим ingredients, обработав command.
-        recipe = get_by_ingredients(ingredients, bad_list)
-        set_text(response, pretty_recipe(recipe))
-        store.save_recipe(user_id, recipe)
-        store.save_answer(user_id, AnswerTypes.RECIPE)
-    elif previous_answer == AnswerTypes.RECIPE:
-        if command and repeat_words:
-            recipe = store.load_recipe(user_id)
-            set_text(response, pretty_recipe(recipe))
+            set_text(response, get_answer_option("not_understand"))
+    elif user_data.dialog_point == AnswerTypes.SET_BAD:
+        if contain({cmd}, Keywords.STOP_WORD):
+            user_data.dialog_point = AnswerTypes.WELCOME  # Добавить кнопки - оценить, повторить и в начало
         else:
-            set_text(response, get_answer_option("will_rate"))
-            store.save_answer(user_id, AnswerTypes.WILL_RATE)
-    elif previous_answer == AnswerTypes.WILL_RATE:
-        if command & agreement_words:
-            set_text(response, get_answer_option("rate"))
-            store.save_answer(user_id, AnswerTypes.SET_RATE)
-        elif command & refusal_words:
-            set_text(response, "Хорошо. " + get_answer_option("will_repeat"))
-            store.save_answer(response, AnswerTypes.WILL_REPEAT)
+            user_data.bad.append(cmd.lower())
+    elif user_data.dialog_point == AnswerTypes.FIND_LIST:
+        if contain({cmd}, Keywords.STOP_WORD):
+            answer, id = api.get_by_ingredients(user_data.good, user_data.bad)
+            set_text(response, answer)
+            user_data.dialog_point = AnswerTypes.SEARCH  # Добавить кнопки - оценить, повторить и в начало
+            user_data.current_recipe_id = id
         else:
-            set_text(response, get_answer_option("not_understand") + ' ' + get_answer_option("will_rate"))
-    elif previous_answer == AnswerTypes.SET_RATE:
-        rate = int(cmd)  # Примитивное получение рейтинга. Работает, когда cmd - число.
-        send_rate(rate)
-        set_text(response, "Спасибо за оценку. " + get_answer_option("repeat"))
-        store.save_answer(user_id, AnswerTypes.WILL_REPEAT)
-    elif previous_answer == AnswerTypes.WILL_REPEAT:
-        if command & agreement_words:
-            go_to_start(response, user_id)
-    else:
-        raise ValueError("Previous answer is not instance of AnswerTypes.")
+            user_data.good.append(cmd.lower())
+    elif user_data.dialog_point == AnswerTypes.FIND_NAME:
+        answer, id = api.get_by_title(cmd, user_data.bad)
+        set_text(response, answer)
+        user_data.current_recipe_id = id
+        user_data.dialog_point = AnswerTypes.SEARCH
+    elif user_data.dialog_point == AnswerTypes.SEARCH:
+        if contain({cmd}, Keywords.REPEAT):
+            set_text(response, "")  # TODO: Сделать ручку
+        elif contain({cmd}, Keywords.RATE):
+            user_data.dialog_point = AnswerTypes.SET_RATE  # Добавить кнопки 1 2 3 4 5
+            set_text(response, get_answer_option('rate'))
+        else:
+            set_text(response, get_answer_option('not_understand'))
+    elif user_data.dialog_point == AnswerTypes.SET_RATE:
+        set_text(response, get_answer_option('will_repeat'))
+    user_data.commit()  # Сохраняем все изменения
