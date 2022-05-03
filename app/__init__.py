@@ -21,13 +21,11 @@ def main():
             'end_session': False
         }
     }
-    handle_dialog(request.json, response)
-    handle_dialog(request.json, response)
-    '''
+    try:
+        handle_dialog(request.json, response)
     except Exception as error:
         logging.error(f'ERR:  {error!r}')
         response['response']['text'] = CONFIG['error']
-    '''
     return Response(json.dumps(response), mimetype='application/json')
 
 

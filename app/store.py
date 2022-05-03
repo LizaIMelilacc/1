@@ -45,3 +45,6 @@ class UserData:
             f"{self.dialog_point};{','.join(self.bad)};{','.join(self.good)};{self.current_recipe_id}",
             ex=ex
         )
+
+    def __str__(self):
+        return f"{self.user_id}: {self.dialog_point}, {self.current_recipe_id}, {self.bad}, {self.good}"

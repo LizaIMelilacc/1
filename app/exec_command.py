@@ -9,6 +9,7 @@ def contain(phrase: set, phrase_type: set) -> bool:
 
 
 def exec_command(response, cmd):
+    print('exec command')
     """
     parse params and execute
     :param response: json-response
@@ -22,16 +23,19 @@ def exec_command(response, cmd):
 
     user_id = response["session"]['user']["user_id"]
     user_data = store.UserData(user_id)
+    print(user_data.dialog_point)
     if cmd in Keywords.HELP:
         set_text(response, get_answer_option("help"))
+        user_data.dialog_point = AnswerTypes.START
+        user_data.commit()
         return
-    if contain(command_set, Keywords.WELCOME) and len(command_set) == 1:
+    if user_data.dialog_point == AnswerTypes.WELCOME:
         user_data.bad = []  # При перезапуске отменяем стоп-лист
         set_text(response, get_answer_option("type_of_searching"))
         user_data.dialog_point = AnswerTypes.START
         user_data.commit()  # Сохраняем все изменения
         return
-    if user_data.dialog_point == AnswerTypes.START:
+    elif user_data.dialog_point == AnswerTypes.START:
         if contain(command_set, Keywords.TITLE_SEARCH):
             user_data.dialog_point = AnswerTypes.FIND_NAME
             set_text(response, get_answer_option('title'))
@@ -54,6 +58,7 @@ def exec_command(response, cmd):
         else:
             user_data.good.append(cmd.lower())
     elif user_data.dialog_point == AnswerTypes.FIND_NAME:
+        print(api.get_by_title(cmd.lower(), user_data.bad))
         answer, id = api.get_by_title(cmd, user_data.bad)
         set_text(response, answer)
         user_data.current_recipe_id = id

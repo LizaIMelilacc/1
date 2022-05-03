@@ -38,17 +38,18 @@ def pretty_recipe(recipe_json):
             ['калорийность', 'белки', 'жиры', 'углеводы']
         )]
     )}
-    Оценка: {recipe_json['Rate']}
+    Оценка: {recipe_json['Rating']}
      """
     if len(text) >= 1024:
         text = text[:1020] + "\n..."
-    return text, [{
-        "title": "Подробнее",
-        "payload": {},
-        "url": f"https://{Env.SITE}{recipe_json['Link']}",
-        "hide": True
-    }
-    ]
+    ''', [{
+           "title": "Подробнее",
+           "payload": {},
+           "url": f"https://{Env.SITE}{recipe_json['Link']}",
+           "hide": True
+       }
+       ]'''
+    return text
 
 
 def get_by_ingredients(good=[], bad=[]):
@@ -63,7 +64,7 @@ def get_by_ingredients(good=[], bad=[]):
         "bad": bad
     })
     if response.status_code != 200:
-        return None
+        return 'Ничего не нашлось', -1
 
     response = response.json()['response']
     return pretty_recipe(response), response['RecipeId']
@@ -80,7 +81,7 @@ def get_by_title(title, bad=[]):
     })
     if response.status_code != 200:
         if response.text == "not found":
-            return "Ничего не нашлось"
+            return "Ничего не нашлось", -1
         return None
     response = response.json()['response']
     return pretty_recipe(response), response['RecipeId']

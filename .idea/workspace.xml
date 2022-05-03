@@ -2,16 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8c0d5626-01fc-48af-8d8f-812f0bfb2745" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/app/kewords.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/AnswerTypes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/AnswerTypes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/exec_command.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/exec_command.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/store.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/store.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/tests.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
