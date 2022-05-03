@@ -1,13 +1,8 @@
 import json
 from app.read_config import config
 import requests
-from dotenv import load_dotenv
-from app.store import *
-
-load_dotenv()
-API_ADDRESS = os.getenv("API_ADDRESS")
-SITE = os.getenv("SITE")
-SEP = os.getenv("SEP")
+import app.store as store
+from app.Env import Env
 
 
 def get_ingredients(ing_set):
@@ -21,7 +16,7 @@ def get_ingredients(ing_set):
     for (title), (count) in zip(ing_set["Ingredients"], json.loads(ing_set["Counts"])):
         answer.append((title['Title'], counts[count], len(title["Title"])))
         max_length = max(max_length, len(title["Title"]))
-    return '\n'.join([i[0] + SEP * (max_length - i[2]) + SEP * 5 + i[1] for i in answer])
+    return '\n'.join([i[0] + Env.SEP * (max_length - i[2]) + Env.SEP * 5 + i[1] for i in answer])
 
 
 def pretty_recipe(recipe_json):
@@ -43,16 +38,18 @@ def pretty_recipe(recipe_json):
             ['калорийность', 'белки', 'жиры', 'углеводы']
         )]
     )}
+    Оценка: {recipe_json['Rating']}
      """
     if len(text) >= 1024:
         text = text[:1020] + "\n..."
-    return text, [{
-        "title": "Подробнее",
-        "payload": {},
-        "url": f"https://{SITE}{recipe_json['Link']}",
-        "hide": True
-    }
-    ]
+    ''', [{
+           "title": "Подробнее",
+           "payload": {},
+           "url": f"https://{Env.SITE}{recipe_json['Link']}",
+           "hide": True
+       }
+       ]'''
+    return text
 
 
 def get_by_ingredients(good=[], bad=[]):
@@ -62,14 +59,15 @@ def get_by_ingredients(good=[], bad=[]):
     :param bad: stop-list ingredients
     :return: None, if not found else
     """
-    response = requests.get(API_ADDRESS + "/find", json={
+    response = requests.get(Env.API_ADDRESS + "/find", json={
         "good": good,
         "bad": bad
     })
     if response.status_code != 200:
-        return None
+        return 'Ничего не нашлось', -1
 
-    return response.json()['response']
+    response = response.json()['response']
+    return pretty_recipe(response), response['RecipeId']
 
 
 def get_by_title(title, bad=[]):
@@ -77,26 +75,17 @@ def get_by_title(title, bad=[]):
     :param title:
     :return:
     """
-    response = requests.get(API_ADDRESS + "/title", json={
+    response = requests.get(Env.API_ADDRESS + "/title", json={
         "title": title,
         "bad": bad
     })
     if response.status_code != 200:
         if response.text == "not found":
-            return "Ничего не нашлось"
+            return "Ничего не нашлось", -1
         return None
-    return response.json()['response']
+    response = response.json()['response']
+    return pretty_recipe(response), response['RecipeId']
 
 
 def send_rate(rate):
     pass  # TODO
-
-
-if __name__ == "__main__":
-    set_user_bad('foo', ['1', '4'])
-    print(get_user_bad('foo'))
-    print(store.ttl('foo'))
-    time.sleep(10)
-    print(get_user_bad('foo'))
-
-    print(get_by_ingredients(["молоко", "яйца"], ["рис"]))
