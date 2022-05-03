@@ -4,4 +4,7 @@ __pycache__/
 .env
 alice.log
 
+.idea/
+*.iml
+
 /~$usecase.xlsx
