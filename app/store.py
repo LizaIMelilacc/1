@@ -25,6 +25,7 @@ class UserData:
         self.load_from_store()
 
     def load_from_store(self) -> list:
+        print('loading')
         if CONNECTION_ERROR:
             return
         data = store.get(self.user_id)
@@ -45,6 +46,22 @@ class UserData:
             f"{self.dialog_point};{','.join(self.bad)};{','.join(self.good)};{self.current_recipe_id}",
             ex=ex
         )
+
+    def __str__(self):
+        return f"{self.user_id}: {self.dialog_point}, {self.current_recipe_id}, {self.bad}, {self.good}"
+
+
+class TestUserData:
+    # Для тестирования. Данные только одного пользователя.
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.current_recipe_id = -1
+        self.bad = []
+        self.good = []
+        self.dialog_point = AnswerTypes.WELCOME
+
+    def commit(self):
+        pass
 
     def __str__(self):
         return f"{self.user_id}: {self.dialog_point}, {self.current_recipe_id}, {self.bad}, {self.good}"
