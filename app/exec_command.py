@@ -29,7 +29,6 @@ def exec_command(response, cmd, test_user_data):
     print(user_data.dialog_point)
     if cmd in Keywords.HELP:
         set_text(response, get_answer_option("help"))
-        user_data.dialog_point = AnswerTypes.START
         user_data.commit()
         return
     if user_data.dialog_point == AnswerTypes.WELCOME:
