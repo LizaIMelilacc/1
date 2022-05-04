@@ -1,4 +1,6 @@
 import json
+import logging
+
 from app.read_config import config
 import requests
 import app.store as store
@@ -82,10 +84,15 @@ def get_by_title(title, bad=[]):
     if response.status_code != 200:
         if response.text == "not found":
             return "Ничего не нашлось", -1
-        return None
+        return "Ничего не нашлось", -1
     response = response.json()['response']
     return pretty_recipe(response), response['RecipeId']
 
 
-def send_rate(rate):
-    pass  # TODO
+def send_rate(recipe_id, rate):
+    response = requests.put(Env.API_ADDRESS + f"/rate/{recipe_id}/{rate}")
+    if response.status_code != 200:
+        logging.warning(f"WARN: Cant rate! {response.status_code} {response.text}")
+        return
+
+

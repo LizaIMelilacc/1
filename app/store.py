@@ -1,50 +1,33 @@
-import redis
 from app.AnswerTypes import AnswerTypes
-from app.Env import Env
-
-ex = Env.EX
-port = Env.REDIS_PORT
-DIALOG_POINT_ID = 0
-BAD_LIST_ID = 1
-GOOD_LIST_ID = 2
-CURRENT_RECIPE = 3
-CONNECTION_ERROR = False
-try:
-    store = redis.Redis(host="localhost", port=port, db=0)
-except redis.exceptions.ConnectionError:
-    CONNECTION_ERROR = True
+from pprint import *
 
 
 class UserData:
-    def __init__(self, user_id):
-        self.user_id = user_id
+    def __init__(self, response):
         self.current_recipe_id = -1
         self.bad = []
         self.good = []
         self.dialog_point = AnswerTypes.WELCOME
-        self.load_from_store()
+        pprint(response)
+        if 'session_state' in response:
+            try:
+                self.current_recipe_id = response['session_state']['recipe']
+                self.bad = response['session_state']['bad']
+                self.good = response['session_state']['good']
+                self.dialog_point = response['session_state']['point']
+            except KeyError:
+                self.current_recipe_id = -1
+                self.bad = []
+                self.good = []
+                self.dialog_point = AnswerTypes.WELCOME
+        else:
+            response['session_state'] = {}
 
-    def load_from_store(self) -> list:
-        if CONNECTION_ERROR:
-            return
-        data = store.get(self.user_id)
-        if data is None:
-            self.commit()
-            return
-        data = data.decode().split(';')
-        if len(data) < CURRENT_RECIPE + 1:
-            return
-        self.current_recipe_id = data[CURRENT_RECIPE]
-        self.dialog_point = AnswerTypes.from_string(data[DIALOG_POINT_ID])
-        self.good = data[GOOD_LIST_ID].split(',')
-        self.bad = data[BAD_LIST_ID].split(',')
-
-    def commit(self):
-        store.set(
-            self.user_id,
-            f"{self.dialog_point};{','.join(self.bad)};{','.join(self.good)};{self.current_recipe_id}",
-            ex=ex
-        )
+    def commit(self, response):
+        response['session_state']['recipe'] = self.current_recipe_id
+        response['session_state']['bad'] = self.bad
+        response['session_state']['good'] = self.good
+        response['session_state']['point'] = self.dialog_point
 
     def __str__(self):
-        return f"{self.user_id}: {self.dialog_point}, {self.current_recipe_id}, {self.bad}, {self.good}"
+        return f"{self.dialog_point}, {self.current_recipe_id}, {self.bad}, {self.good}"

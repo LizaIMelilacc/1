@@ -10,6 +10,7 @@ class AnswerTypes:
     SEARCH = 3
     SET_RATE = 4
     SET_BAD = 5
+    WILL_REPEAT = 6
 
     @staticmethod
     def from_string(string):
