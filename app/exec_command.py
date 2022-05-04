@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import app.api as api
 from app import store
 from app.utils import *
@@ -9,7 +11,14 @@ def contain(phrase: set, phrase_type: set) -> bool:
     return len(phrase.intersection(phrase_type)) != 0
 
 
-def exec_command(response, cmd):
+def prepare_response(response, request):
+    response["session_state"]["current_state"] = request["state"]["session"]["current_state"]
+    response["session_state"]["bad"] = request["state"]["session"]["bad"]
+    response["session_state"]["good"] = request["state"]["session"]["good"]
+    response["session_state"]["current_recipe_id"] = request["state"]["session"]["current_recipe_id"]
+
+
+def exec_command(response, cmd, request):
     """
     parse params and execute
     :param response: json-response
@@ -18,7 +27,7 @@ def exec_command(response, cmd):
     """
     command = [to_normal_form(word) for word in cmd.lower().split()]
     command_set = set(command)
-
+    prepare_response(response, request)
     user_data = store.UserData(response)
     if cmd in Keywords.HELP:
         set_text(response, get_answer_option("help"))
@@ -32,6 +41,7 @@ def exec_command(response, cmd):
             user_data.commit(response)  # Сохраняем все изменения
             return
         case AnswerTypes.START:
+            print("МЫ В СТАРТЕ")
             if contain(command_set, Keywords.BAD_LIST):
                 user_data.dialog_point = AnswerTypes.SET_BAD
                 set_text(response, get_answer_option('bad_ingredients'))

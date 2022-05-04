@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from flask import Flask, request, Response
 import logging
 import json
@@ -19,8 +21,15 @@ def main():
         'version': request.json['version'],
         'response': {
             'end_session': False
+        },
+        'session_state': {
+            "current_state": 0,
+            "bad": [],
+            "good": [],
+            "current_recipe_id": -1
         }
     }
+    pprint(request.json)
     handle_dialog(request.json, response)
     return Response(json.dumps(response), mimetype='application/json')
 
@@ -29,7 +38,7 @@ def handle_dialog(req, res):
     if req['session']['new']:  # is sessions new?
         set_text(res, get_answer_option('greetings'))
     else:
-        exec_command(res, req['request']['command'])
+        exec_command(res, req['request']['command'], req)
 
 
 port = Env.PORT

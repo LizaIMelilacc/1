@@ -94,5 +94,3 @@ def send_rate(recipe_id, rate):
     if response.status_code != 200:
         logging.warning(f"WARN: Cant rate! {response.status_code} {response.text}")
         return
-
-
