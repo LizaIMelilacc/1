@@ -1,5 +1,3 @@
-from pprint import pprint
-
 import app.api as api
 from app import store
 from app.utils import *
@@ -23,6 +21,7 @@ def exec_command(response, cmd, request):
     parse params and execute
     :param response: json-response
     :param cmd: command
+    :param request: json-request (from Alice server)
     :return: None. change values in response
     """
     command = [to_normal_form(word) for word in cmd.lower().split()]
@@ -37,11 +36,11 @@ def exec_command(response, cmd, request):
         case AnswerTypes.WELCOME:
             user_data.bad = []  # При перезапуске отменяем стоп-лист
             set_text(response, get_answer_option("type_of_searching"))
+            set_buttons(response, ["список", "название", "исключить"])
             user_data.dialog_point = AnswerTypes.START
             user_data.commit(response)  # Сохраняем все изменения
             return
         case AnswerTypes.START:
-            print("МЫ В СТАРТЕ")
             if contain(command_set, Keywords.BAD_LIST):
                 user_data.dialog_point = AnswerTypes.SET_BAD
                 set_text(response, get_answer_option('bad_ingredients'))
@@ -52,18 +51,22 @@ def exec_command(response, cmd, request):
                 user_data.dialog_point = AnswerTypes.FIND_LIST
                 set_text(response, get_answer_option('ingredients'))
             else:
-                set_text(response, get_answer_option("not_understand"))
+                set_text(response, get_answer_option("not_understand") + \
+                         "\n" + get_answer_option("will_repeat"))
+                set_buttons(response, ["да", "нет"], hide=True)
         case AnswerTypes.SET_BAD:
             if contain({cmd}, Keywords.STOP_WORD):
                 user_data.dialog_point = AnswerTypes.START  # Добавить кнопки - оценить, повторить и в начало
                 set_text(response, get_answer_option('type_of_searching'))
+                set_buttons(response, ["список", "название"])
             else:
                 user_data.bad.append(cmd.lower())
                 set_text(response, get_answer_option('next'))
         case AnswerTypes.FIND_LIST:
             if contain({cmd}, Keywords.STOP_WORD):
                 answer, id = api.get_by_ingredients(user_data.good, user_data.bad)
-                set_text(response, answer)
+                print(answer)
+                create_card(response, answer)
                 user_data.dialog_point = AnswerTypes.SEARCH  # Добавить кнопки - оценить, повторить и в начало
                 user_data.current_recipe_id = id
             else:
@@ -72,25 +75,33 @@ def exec_command(response, cmd, request):
         case AnswerTypes.FIND_NAME:
             answer, id = api.get_by_title(cmd, user_data.bad)
             set_text(response, answer)
+            set_buttons(response, ['оценить', "повтор", "стоп"])
             user_data.current_recipe_id = id
             user_data.dialog_point = AnswerTypes.SEARCH
         case AnswerTypes.SEARCH:
             if contain({cmd}, Keywords.REPEAT):
-                set_text(response, "")  # TODO: Сделать ручку
+                text, id = api.get_by_id(user_data.current_recipe_id)
+                set_text(response, text)
+                set_buttons(response, ["оценить", "повтор", "стоп"])
             elif contain({cmd}, Keywords.RATE):
-                user_data.dialog_point = AnswerTypes.SET_RATE  # Добавить кнопки 1 2 3 4 5
+                user_data.dialog_point = AnswerTypes.SET_RATE
                 set_text(response, get_answer_option('rate'))
+                set_buttons(response, [str(i) for i in range(5, 0, -1)])
             else:
-                set_text(response, get_answer_option('not_understand'))
+                user_data.dialog_point = AnswerTypes.WILL_REPEAT
+                set_text(response, get_answer_option('will_repeat'))
+                set_buttons(response, ["да", "нет"])
         case AnswerTypes.SET_RATE:
             if cmd.isdigit():
                 api.send_rate(user_data.current_recipe_id, int(cmd))
             user_data.dialog_point = AnswerTypes.WILL_REPEAT
             set_text(response, get_answer_option('will_repeat'))
+            set_buttons(response, ["да", "нет"], hide=True)
         case AnswerTypes.WILL_REPEAT:
             if cmd.lower() in Keywords.ACCEPT:
                 user_data.dialog_point = AnswerTypes.START
                 set_text(response, get_answer_option("type_of_searching"))
+                set_buttons(response, ["список", "название", "исключить"])
             else:
                 set_text(response, "До связи")
                 response['end_session'] = True
