@@ -6,7 +6,6 @@ from app.exec_command import exec_command
 from dotenv import load_dotenv
 from app.Env import Env
 
-from pprint import pprint
 
 load_dotenv()
 CONFIG = config
@@ -30,7 +29,6 @@ def main():
         }
     }
     handle_dialog(request.json, response)
-    pprint(response)
     return Response(json.dumps(response), mimetype='application/json')
 
 

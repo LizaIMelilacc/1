@@ -60,6 +60,7 @@ def pretty_recipe(recipe_json):
     """
     new_line = '\n'
     text = f"""
+     {recipe_json['Title']}
      {recipe_json['Description']}
      Ингредиенты
      {get_ingredients(recipe_json['IngSet'])}

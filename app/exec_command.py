@@ -28,6 +28,8 @@ def exec_command(response, cmd, request):
     command_set = set(command)
     prepare_response(response, request)
     user_data = store.UserData(response)
+    if cmd.lower() == "подробнее":
+        set_text(response, "Открываю")
     if cmd in Keywords.HELP:
         set_text(response, get_answer_option("help"))
         user_data.dialog_point = AnswerTypes.START
@@ -64,25 +66,34 @@ def exec_command(response, cmd, request):
                 set_text(response, get_answer_option('next'))
         case AnswerTypes.FIND_LIST:
             if contain({cmd}, Keywords.STOP_WORD):
-                answer, id = api.get_by_ingredients(user_data.good, user_data.bad)
-                print(answer)
-                create_card(response, answer)
+                recipe = api.get_by_ingredients(user_data.good, user_data.bad)
+                api.show_recipe(response, recipe)
+                if recipe != {}:
+                    user_data.current_recipe_id = recipe['RecipeId']
+                    set_buttons(response, ["оценить", "повтор", "стоп"])
+                else:
+                    set_buttons(response, ["стоп"])
                 user_data.dialog_point = AnswerTypes.SEARCH  # Добавить кнопки - оценить, повторить и в начало
-                user_data.current_recipe_id = id
             else:
                 user_data.good.append(cmd.lower())
                 set_text(response, get_answer_option('next'))
         case AnswerTypes.FIND_NAME:
-            answer, id = api.get_by_title(cmd, user_data.bad)
-            set_text(response, answer)
-            set_buttons(response, ['оценить', "повтор", "стоп"])
-            user_data.current_recipe_id = id
+            recipe = api.get_by_title(user_data.good, user_data.bad)
+            api.show_recipe(response, recipe)
+            if recipe != {}:
+                user_data.current_recipe_id = recipe['RecipeId']
+                set_buttons(response, ['оценить', "повтор", "стоп"])
+            else:
+                set_buttons(response, ["стоп"])
             user_data.dialog_point = AnswerTypes.SEARCH
         case AnswerTypes.SEARCH:
             if contain({cmd}, Keywords.REPEAT):
-                text, id = api.get_by_id(user_data.current_recipe_id)
-                set_text(response, text)
-                set_buttons(response, ["оценить", "повтор", "стоп"])
+                recipe = api.get_by_id(user_data.current_recipe_id)
+                api.show_recipe(response, recipe)
+                if recipe != {}:
+                    set_buttons(response, ["оценить", "повтор", "стоп"])
+                else:
+                    set_buttons(response, ["стоп"])
             elif contain({cmd}, Keywords.RATE):
                 user_data.dialog_point = AnswerTypes.SET_RATE
                 set_text(response, get_answer_option('rate'))
