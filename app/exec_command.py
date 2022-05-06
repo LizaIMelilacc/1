@@ -76,6 +76,11 @@ def exec_command(response, cmd, request):
                 if recipe != {}:
                     user_data.current_recipe_id = recipe['RecipeId']
                     set_buttons(response, ["оценить", "повтор", "стоп"])
+                    response['response']['buttons'].append({
+                        "title": "подробнее",
+                        "url": recipe["Link"],
+                        "hide": True
+                    })
                 else:
                     set_buttons(response, ["стоп"])
                 user_data.dialog_point = AnswerTypes.SEARCH  # Добавить кнопки - оценить, повторить и в начало
@@ -89,6 +94,11 @@ def exec_command(response, cmd, request):
             if recipe != {}:
                 user_data.current_recipe_id = recipe['RecipeId']
                 set_buttons(response, ['оценить', "повтор", "стоп"])
+                response['response']['buttons'].append({
+                    "title": "подробнее",
+                    "url": recipe["Link"],
+                    "hide": True
+                })
             else:
                 set_buttons(response, ["стоп"])
             user_data.dialog_point = AnswerTypes.SEARCH
