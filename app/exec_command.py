@@ -24,16 +24,19 @@ def exec_command(response, cmd, request):
     :param request: json-request (from Alice server)
     :return: None. change values in response
     """
-    command = [to_normal_form(word) for word in cmd.lower().split()]
+    cmd = cmd.lower()
+    command = [to_normal_form(word) for word in cmd.split()]
     command_set = set(command)
     prepare_response(response, request)
     user_data = store.UserData(response)
-    if cmd.lower() == "подробнее":
+    if cmd == "подробнее":
         set_text(response, "Открываю")
     if cmd in Keywords.HELP:
         set_text(response, get_answer_option("help"))
-        user_data.dialog_point = AnswerTypes.START
+        user_data.dialog_point = AnswerTypes.WELCOME
+        set_buttons(response, ['начать', "помощь"])
         user_data.commit(response)
+        return
     match user_data.dialog_point:
         case AnswerTypes.WELCOME:
             user_data.bad = []  # При перезапуске отменяем стоп-лист
@@ -64,6 +67,7 @@ def exec_command(response, cmd, request):
             else:
                 user_data.bad.append(cmd.lower())
                 set_text(response, get_answer_option('next'))
+                set_buttons(response, ['стоп'], hide=True)
         case AnswerTypes.FIND_LIST:
             if contain({cmd}, Keywords.STOP_WORD):
                 recipe = api.get_by_ingredients(user_data.good, user_data.bad)
@@ -77,8 +81,9 @@ def exec_command(response, cmd, request):
             else:
                 user_data.good.append(cmd.lower())
                 set_text(response, get_answer_option('next'))
+                set_buttons(response, ['стоп'], hide=True)
         case AnswerTypes.FIND_NAME:
-            recipe = api.get_by_title(user_data.good, user_data.bad)
+            recipe = api.get_by_title(cmd, user_data.bad)
             api.show_recipe(response, recipe)
             if recipe != {}:
                 user_data.current_recipe_id = recipe['RecipeId']
@@ -97,7 +102,7 @@ def exec_command(response, cmd, request):
             elif contain({cmd}, Keywords.RATE):
                 user_data.dialog_point = AnswerTypes.SET_RATE
                 set_text(response, get_answer_option('rate'))
-                set_buttons(response, [str(i) for i in range(5, 0, -1)])
+                set_buttons(response, [str(i) for i in range(1, 6)], hide=True)
             else:
                 user_data.dialog_point = AnswerTypes.WILL_REPEAT
                 set_text(response, get_answer_option('will_repeat'))
@@ -109,7 +114,7 @@ def exec_command(response, cmd, request):
             set_text(response, get_answer_option('will_repeat'))
             set_buttons(response, ["да", "нет"], hide=True)
         case AnswerTypes.WILL_REPEAT:
-            if cmd.lower() in Keywords.ACCEPT:
+            if cmd in Keywords.ACCEPT:
                 user_data.dialog_point = AnswerTypes.START
                 set_text(response, get_answer_option("type_of_searching"))
                 set_buttons(response, ["список", "название", "исключить"])

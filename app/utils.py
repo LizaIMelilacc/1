@@ -21,7 +21,7 @@ def set_tts(response, tts):
     response['response']['tts'] = tts
 
 
-def set_buttons(response, buttons, hide=False):
+def set_buttons(response, buttons, hide=True):
     response['response']['buttons'] = [
         {
             "title": but,
@@ -90,7 +90,7 @@ def create_card(response, recipe_json):
         "description": body,
         "button": {
             "text": "Подробнее",
-            "url": "https://eda.ru" + recipe_json["Link"],
+            "url": Env.SITE + recipe_json["Link"],
             "payload": {}
         }
     }

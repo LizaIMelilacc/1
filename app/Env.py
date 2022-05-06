@@ -4,6 +4,6 @@ class Env:
     LOG_FILE = 'alice.log'
     LOG_MODE = 'w'
     PORT = 5000
-    SITE = 'eda.ru'
+    SITE = 'https://eda.ru'
     SEP = "_"
     EX = 86400
