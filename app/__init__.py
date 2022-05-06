@@ -3,11 +3,9 @@ import logging
 import json
 from app.utils import *
 from app.exec_command import exec_command
-from dotenv import load_dotenv
 from app.Env import Env
 
 
-load_dotenv()
 CONFIG = config
 app = Flask(__name__)
 logging.basicConfig(filename=Env.LOG_FILE, filemode=Env.LOG_MODE, level=logging.INFO)
