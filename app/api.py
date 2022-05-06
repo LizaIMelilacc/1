@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 import logging
 import requests
 from app.Env import Env
@@ -11,20 +10,16 @@ def get_by_ingredients(good=[], bad=[]):
         "Good": good,
         "Bad": bad
     })
-    pprint(response.text)
     if response.status_code != 200:
         return {}
     return response.json()['response']
 
 
 def get_by_title(title, bad=[]):
-    print(Env.API_ADDRESS + "/title")
-    print(f"{title=}")
     response = requests.get(Env.API_ADDRESS + "/title", json={
         "Title": title,
         "Bad": bad
     })
-    pprint(response.text)
     if response.status_code != 200:
         if response.text == "not found":
             return {}
@@ -40,7 +35,6 @@ def get_by_id(_id):
 
 
 def show_recipe(response, recipe):
-    print(recipe)
     if "RecipeId" in recipe:
         utils.set_text(response, utils.pretty_recipe(recipe))
         return

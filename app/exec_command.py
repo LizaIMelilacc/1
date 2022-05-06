@@ -58,6 +58,7 @@ def exec_command(response, cmd, request):
             else:
                 set_text(response, get_answer_option("not_understand") + \
                          "\n" + get_answer_option("will_repeat"))
+                user_data.dialog_point = AnswerTypes.WILL_REPEAT
                 set_buttons(response, ["да", "нет"], hide=True)
         case AnswerTypes.SET_BAD:
             if contain({cmd}, Keywords.STOP_WORD):
