@@ -1,5 +1,5 @@
 class Env:
-    API_ADDRESS = 'http://localhost:8080'
+    API_ADDRESS = 'https://fast-island-18994.herokuapp.com'
     REDIS_PORT = 6379
     LOG_FILE = 'alice.log'
     LOG_MODE = 'w'
